@@ -23,6 +23,14 @@
 			<li><code>results-timeseries/</code>: <a href="viz/results-timeseries/" title="Visualisierung Ergebnis Zeitreihe">link</a></li>
 		</ul>
 	</li>
+	<li><code>pdf/</code>: <a href="/pdf/" title="Visualisierung">link</a>
+		<ul>
+			<li><code>results-bar/</code>: <a href="pdf/results-bar/" title="Visualisierung Ergebnis Balken">link</a></li>
+			<li><code>results-map/</code>: <a href="pdf/results-map/" title="Visualisierung Ergebnis Karte">link</a></li>
+			<li><code>results-mapnrw13/</code>: <a href="pdf/results-mapnrw13/" title="Visualisierung Ergebnis Karte NRW13">link</a></li>
+			<li><code>results-mapcanvas/</code>: <a href="pdf/results-mapcanvas/" title="Visualisierung Ergebnis Karte Canvas">link</a></li>
+		</ul>
+	</li>
 	<li><code>api/</code>
 		<ul>
 			<li><code>result/</code>

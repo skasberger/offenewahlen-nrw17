@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'wkhtmltopdf',
     #'django.contrib.sitemaps'
     #'django.contrib.static_precompiler',
 ]
@@ -149,6 +150,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# WKHTML2PDF
+
+
+WKHTMLTOPDF_CMD_OPTIONS = {
+    'quiet': True,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

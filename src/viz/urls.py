@@ -1,7 +1,6 @@
 from django.conf.urls import url, include
-
+from wkhtmltopdf.views import PDFTemplateView
 from rest_framework.routers import DefaultRouter
-
 from . import views, views_api
 
 router = DefaultRouter()
@@ -23,6 +22,11 @@ urlpatterns = [
 	url(r'^viz/results-mapnrw13/$', views.viz_results_mapnrw13, name='viz_results_mapnrw13'),
 	url(r'^viz/results-mapcanvas/$', views.viz_results_mapcanvas, name='viz_results_mapcanvas'),
 	url(r'^viz/results-timeseries', views.viz_results_timeseries, name='viz_results_timeseries'),
+	url(r'^pdf/$', PDFTemplateView.as_view(template_name='viz/index_viz.dtl', filename='viz.pdf'), name='pdf'),
+	url(r'^pdf/results-bar/$', PDFTemplateView.as_view(template_name='viz/index_viz_result_bar.dtl', filename='result-bar.pdf'), name='pdf'),
+	url(r'^pdf/results-map/$', PDFTemplateView.as_view(template_name='viz/index_viz_result_map.dtl', filename='result-map.pdf'), name='pdf'),
+	url(r'^pdf/results-mapcanvas/$', PDFTemplateView.as_view(template_name='viz/index_viz_result_mapcanvas.dtl', filename='result-mapcanvas.pdf'), name='pdf'),
+	url(r'^pdf/results-mapnrw13/$', PDFTemplateView.as_view(template_name='viz/index_viz_result_mapnrw13.dtl', filename='result-mapnrw13.pdf'), name='pdf'),
 	url(r'^computing/', views.computing, name='computing'),
 	url(r'^waiting/', views.waiting, name='waiting'),
 	url(r'^test/', views.test, name='test'),

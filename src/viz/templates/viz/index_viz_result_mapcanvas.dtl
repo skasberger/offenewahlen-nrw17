@@ -14,6 +14,7 @@
 {% endblock %}
 
 {% block content %}
+<img src="{% static 'img/offene-wahlen.svg' %}"></a>
 <div class="container">
 	<div id="chart">
 	</div>
