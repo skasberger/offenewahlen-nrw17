@@ -1,13 +1,15 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 from viz.models import PollingStationResult, RawData, ListResult, \
-	PollingStation, RawData, Election, Party, List
+	PollingStation, RawData, Election, Party, List, Municipality, District, RegionalElectoralDistrict, State
 import json
 import xml.etree.ElementTree as ET
 import pprint
 import requests
 import datetime
 import hashlib
+import pandas as pd
+from django_pandas.io import read_frame
 
 class Command(BaseCommand):
 
@@ -34,27 +36,31 @@ class Command(BaseCommand):
 		config['ts_import'] = timezone.now()
 		config['log_detail'] = 'middle'
 
-		# get raw data
-		if config['file_location'] == 'local':
-			raw_data = self.get_local_data(config['file_path'])
-			header = None
-		elif config['file_location'] == 'web':
-			(raw_data, header) = self.get_network_data(config['file_path'])
+		if False:
+			# get raw data
+			if config['file_location'] == 'local':
+				raw_data = self.get_local_data(config['file_path'])
+				header = None
+			elif config['file_location'] == 'web':
+				(raw_data, header) = self.get_network_data(config['file_path'])
 
-		# store raw data in database
-		self.write_raw_data_to_database(raw_data, header, config)
+			# store raw data in database
+			self.write_raw_data_to_database(raw_data, header, config)
 
-		# convert different raw data types to uniform data standard
-		data = self.standardize_raw_data(raw_data, config)	
+			# convert different raw data types to uniform data standard
+			data = self.standardize_raw_data(raw_data, config)	
 
-		# mapping of input data keys to database property names
-		data = self.map_keys(data, config)
-			
-		# get lists queryset
-		config['lists_queryset'] = self.get_lists_queryset(data, config)
-			
-		# write election results to database
-		self.import_results(data, config)
+			# mapping of input data keys to database property names
+			data = self.map_keys(data, config)
+				
+			# get lists queryset
+			config['lists_queryset'] = self.get_lists_queryset(data, config)
+				
+			# write election results to database
+			self.import_results(data, config)
+
+		# calculate aggregates
+		self.compute_aggregates(config)
 
 	def write_raw_data_to_database(self, data, header, config, ts_file=None):
 		"""
@@ -263,3 +269,47 @@ class Command(BaseCommand):
 		print('PollingStationResult table imported: '+ 'new entries: '+str(psr_num_entries_created)+', updated entries: '+str(psr_num_entries_updated))
 		print('ListResult table imported: '+ 'new entries: '+str(lr_num_entries_created)+', updated entries: '+str(lr_num_entries_updated))
 		print('These polling stations where not found:', ps_not_found)	
+
+	def compute_aggregates(self, config):
+		"""
+		Compute aggregates from results
+		"""
+
+		ele = config['election_queryset']
+		data = PollingStationResult.objects.select_related('polling_station__municipality__district__state', 'polling_station__municipality__regional_electoral_district').all().filter(election=ele)
+		municipalities = []
+		for mun in data:
+			tmp = {}
+			tmp['votes'] = int(mun.votes)
+			tmp['valid'] = int(mun.valid)
+			tmp['invalid'] = int(mun.invalid)
+			tmp['mun_code'] = str(mun.polling_station.municipality)
+			tmp['dis_code'] = str(mun.polling_station.municipality.district)
+			tmp['red_code'] = str(mun.polling_station.municipality.regional_electoral_district)
+			tmp['state_code'] = str(mun.polling_station.municipality.district.state)
+			municipalities.append(tmp)
+		df = pd.DataFrame(municipalities)
+		dis = df.groupby('dis_code').sum()
+		red = df.groupby('red_code').sum()
+		state = df.groupby('state_code').sum()
+		print(dis)
+		print(red)
+		print(state)
+		#muns = Municipality.objects.select_related().all().filter(election=ele)
+		#districts = District.objects.select_related().all().filter(election=ele)
+		#reds = RegionalElectoralDistrict.objects.select_related().all().filter(election=ele)
+		#states = State.objects.select_related().all().filter(election=ele)
+		#print(df[:1])
+		#del df['polling_station']
+		#print(df.T.to_dict().values())
+
+
+		entries = []
+		#for e in df.T.to_dict().values():
+		#    entries.append(HistoricalPrices(**e))
+		#HistoricalPrices.objects.bulk_create(entries)
+
+		#ListDistrictResult
+		#ListREDResult
+		#ListStateResult
+

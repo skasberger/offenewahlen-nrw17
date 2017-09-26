@@ -168,6 +168,66 @@ class PollingStationResult(models.Model):
 		verbose_name_plural = 'polling station results'
 
 
+class DistrictResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	district = models.ForeignKey(District, on_delete=models.PROTECT, default=None)
+	election = models.ForeignKey(Election, on_delete=models.PROTECT, default=None)
+	eligible_voters = models.IntegerField(null=True, default=-1)
+	votes = models.IntegerField(default=-1)
+	valid = models.IntegerField(default=-1)
+	invalid = models.IntegerField(default=-1)
+	ts_result = models.DateTimeField('timestamp of bmi result')
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		get_latest_by = 'ts_result'
+		verbose_name = 'district result'
+		verbose_name_plural = 'district results'
+
+
+class REDResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	regional_electoral_district = models.ForeignKey(RegionalElectoralDistrict, on_delete=models.PROTECT, default=None)
+	election = models.ForeignKey(Election, on_delete=models.PROTECT, default=None)
+	eligible_voters = models.IntegerField(null=True, default=-1)
+	votes = models.IntegerField(default=-1)
+	valid = models.IntegerField(default=-1)
+	invalid = models.IntegerField(default=-1)
+	ts_result = models.DateTimeField('timestamp of bmi result')
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		get_latest_by = 'ts_result'
+		verbose_name = 'regional electoral district result'
+		verbose_name_plural = 'regional electoral district results'
+
+
+class StateResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	state = models.ForeignKey(State, on_delete=models.PROTECT, default=None)
+	election = models.ForeignKey(Election, on_delete=models.PROTECT, default=None)
+	eligible_voters = models.IntegerField(null=True, default=-1)
+	votes = models.IntegerField(default=-1)
+	valid = models.IntegerField(default=-1)
+	invalid = models.IntegerField(default=-1)
+	ts_result = models.DateTimeField('timestamp of bmi result')
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		get_latest_by = 'ts_result'
+		verbose_name = 'state result'
+		verbose_name_plural = 'state results'
+
+
 class ListResult(models.Model):
 	id = models.AutoField(primary_key=True)
 	polling_station_result = models.ForeignKey(PollingStationResult, on_delete=models.PROTECT)
@@ -181,6 +241,51 @@ class ListResult(models.Model):
 		ordering = ['id']
 		verbose_name = 'list result'
 		verbose_name_plural = 'list results'
+
+
+class ListDistrictResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	district_result = models.ForeignKey(DistrictResult, on_delete=models.PROTECT)
+	election_list = models.ForeignKey(List, on_delete=models.PROTECT)
+	votes = models.IntegerField(null=True, default=-1)
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		verbose_name = 'list district result'
+		verbose_name_plural = 'list district results'
+
+
+class ListREDResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	red_result = models.ForeignKey(REDResult, on_delete=models.PROTECT)
+	election_list = models.ForeignKey(List, on_delete=models.PROTECT)
+	votes = models.IntegerField(null=True, default=-1)
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		verbose_name = 'list regional electoral district result'
+		verbose_name_plural = 'list regional electoral district results'
+
+
+class ListStateResult(models.Model):
+	id = models.AutoField(primary_key=True)
+	state_result = models.ForeignKey(StateResult, on_delete=models.PROTECT)
+	election_list = models.ForeignKey(List, on_delete=models.PROTECT)
+	votes = models.IntegerField(null=True, default=-1)
+
+	def __str__(self):
+		return "%s" % (self.id)
+
+	class Meta:
+		ordering = ['id']
+		verbose_name = 'list state result'
+		verbose_name_plural = 'list state results'
 
 
 class RawData(models.Model):
